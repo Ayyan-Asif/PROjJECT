@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Results - Football Management System</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>⚽ Football Manager</h2>
+            <button class="close-btn" id="closeSidebar">✕</button>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="dashboard.html">📊 Dashboard</a></li>
+            <li><a href="players.html">👤 Players</a></li>
+            <li><a href="teams.html">🏆 Teams</a></li>
+            <li><a href="coaches.html">👨‍💼 Coaches</a></li>
+            <li><a href="matches.html">⚽ Matches</a></li>
+            <li><a href="match-results.html" class="active">📈 Match Results</a></li>
+            <li><a href="player-stats.html">📊 Player Statistics</a></li>
+            <li><a href="#" id="logoutBtn">🚪 Logout</a></li>
+        </ul>
+        <button class="theme-toggle" id="themeToggle">
+            <span class="theme-icon">🌙</span>
+        </button>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <button class="menu-toggle" id="menuToggle">☰</button>
+            <h1>Match Results</h1>
+            <div class="user-info">
+                <span id="userName">Admin</span>
+                <div class="user-avatar">A</div>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Filters -->
+            <div class="page-actions">
+                <div class="filter-group">
+                    <select id="competitionFilter">
+                        <option value="">All Competitions</option>
+                    </select>
+                    <input type="date" id="dateFilter" placeholder="Filter by date">
+                </div>
+            </div>
+
+            <!-- Results Grid -->
+            <div class="results-grid" id="resultsGrid">
+                <!-- Match results will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Result Modal -->
+    <div class="modal" id="resultModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Update Match Result</h2>
+                <button class="close-btn" id="closeModal">✕</button>
+            </div>
+            <form id="resultForm">
+                <input type="hidden" id="matchId">
+                
+                <div class="match-info">
+                    <h3 id="matchTeams"></h3>
+                    <p id="matchDetails"></p>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="homeScore">Home Team Score *</label>
+                        <input type="number" id="homeScore" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="awayScore">Away Team Score *</label>
+                        <input type="number" id="awayScore" min="0" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="status">Match Status *</label>
+                        <select id="status" required>
+                            <option value="Scheduled">Scheduled</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Postponed">Postponed</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Result</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/match-results.js"></script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach Management - Football Management System</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>⚽ Football Manager</h2>
+            <button class="close-btn" id="closeSidebar">✕</button>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="dashboard.html">📊 Dashboard</a></li>
+            <li><a href="players.html">👤 Players</a></li>
+            <li><a href="teams.html">🏆 Teams</a></li>
+            <li><a href="coaches.html" class="active">👨‍💼 Coaches</a></li>
+            <li><a href="matches.html">⚽ Matches</a></li>
+            <li><a href="match-results.html">📈 Match Results</a></li>
+            <li><a href="player-stats.html">📊 Player Statistics</a></li>
+            <li><a href="#" id="logoutBtn">🚪 Logout</a></li>
+        </ul>
+        <button class="theme-toggle" id="themeToggle">
+            <span class="theme-icon">🌙</span>
+        </button>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <button class="menu-toggle" id="menuToggle">☰</button>
+            <h1>Coach Management</h1>
+            <div class="user-info">
+                <span id="userName">Admin</span>
+                <div class="user-avatar">A</div>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Action Buttons -->
+            <div class="page-actions">
+                <button class="btn btn-primary" id="addCoachBtn">+ Add New Coach</button>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search coaches...">
+                </div>
+            </div>
+
+            <!-- Coaches Table -->
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Nationality</th>
+                            <th>Experience</th>
+                            <th>Specialty</th>
+                            <th>License Level</th>
+                            <th>Team</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="coachesTableBody">
+                        <!-- Coaches will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Coach Modal -->
+    <div class="modal" id="coachModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Coach</h2>
+                <button class="close-btn" id="closeModal">✕</button>
+            </div>
+            <form id="coachForm">
+                <input type="hidden" id="coachId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="coachName">Coach Name *</label>
+                        <input type="text" id="coachName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nationality">Nationality *</label>
+                        <input type="text" id="nationality" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dateOfBirth">Date of Birth</label>
+                        <input type="date" id="dateOfBirth">
+                    </div>
+                    <div class="form-group">
+                        <label for="experienceYears">Experience (Years)</label>
+                        <input type="number" id="experienceYears" min="0">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="specialty">Specialty</label>
+                        <input type="text" id="specialty" placeholder="e.g., Attacking Football, Youth Development">
+                    </div>
+                    <div class="form-group">
+                        <label for="licenseLevel">License Level</label>
+                        <select id="licenseLevel">
+                            <option value="">Select License</option>
+                            <option value="UEFA Pro">UEFA Pro</option>
+                            <option value="UEFA A">UEFA A</option>
+                            <option value="UEFA B">UEFA B</option>
+                            <option value="UEFA C">UEFA C</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select id="status">
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Coach</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h2>Confirm Delete</h2>
+                <button class="close-btn" id="closeConfirmModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this coach?</p>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelDeleteBtn">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/coaches.js"></script>
+</body>
+</html> 

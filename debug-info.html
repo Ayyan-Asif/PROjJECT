@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Info - Football Management System</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #10b981;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #0A774A;
+            border-bottom: 2px solid #0A774A;
+            padding-bottom: 10px;
+        }
+        .section {
+            background: #262626;
+            border: 1px solid #404040;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .section h2 {
+            color: #3b82f6;
+            margin-top: 0;
+        }
+        .info-row {
+            display: flex;
+            margin: 10px 0;
+            padding: 8px;
+            background: #1a1a1a;
+            border-radius: 4px;
+        }
+        .label {
+            color: #eab308;
+            font-weight: bold;
+            min-width: 200px;
+        }
+        .value {
+            color: #10b981;
+        }
+        .error {
+            color: #dc2626;
+        }
+        .warning {
+            color: #eab308;
+        }
+        .success {
+            color: #10b981;
+        }
+        button {
+            background: #0A774A;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-family: 'Courier New', monospace;
+        }
+        button:hover {
+            background: #086339;
+        }
+        pre {
+            background: #000;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            border-left: 3px solid #0A774A;
+        }
+        .test-btn {
+            background: #3b82f6;
+        }
+        .test-btn:hover {
+            background: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Football Management System - Debug Information</h1>
+
+    <div class="section">
+        <h2>📋 System Information</h2>
+        <div id="systemInfo"></div>
+    </div>
+
+    <div class="section">
+        <h2>🔐 Authentication Status</h2>
+        <div id="authInfo"></div>
+    </div>
+
+    <div class="section">
+        <h2>🌐 API Configuration</h2>
+        <div id="apiInfo"></div>
+    </div>
+
+    <div class="section">
+        <h2>💾 LocalStorage Contents</h2>
+        <div id="storageInfo"></div>
+        <button onclick="clearStorage()">Clear LocalStorage</button>
+    </div>
+
+    <div class="section">
+        <h2>🧪 Quick API Tests</h2>
+        <button class="test-btn" onclick="testHealth()">Test Health Endpoint</button>
+        <button class="test-btn" onclick="testTeams()">Test Teams API</button>
+        <button class="test-btn" onclick="testCoaches()">Test Coaches API</button>
+        <button class="test-btn" onclick="testMatches()">Test Matches API</button>
+        <button class="test-btn" onclick="testLogin()">Test Login</button>
+        <div id="testResults"></div>
+    </div>
+
+    <div class="section">
+        <h2>🖥️ Browser Console Errors</h2>
+        <div id="consoleErrors">
+            <p class="warning">Open browser DevTools (F12) to see console errors</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3000/api';
+
+        // Display system info
+        function displaySystemInfo() {
+            const info = document.getElementById('systemInfo');
+            info.innerHTML = `
+                <div class="info-row">
+                    <span class="label">Browser:</span>
+                    <span class="value">${navigator.userAgent}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Platform:</span>
+                    <span class="value">${navigator.platform}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Language:</span>
+                    <span class="value">${navigator.language}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Online:</span>
+                    <span class="value ${navigator.onLine ? 'success' : 'error'}">
+                        ${navigator.onLine ? '✓ Yes' : '✗ No'}
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Current URL:</span>
+                    <span class="value">${window.location.href}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Protocol:</span>
+                    <span class="value ${window.location.protocol === 'file:' ? 'error' : 'success'}">
+                        ${window.location.protocol} ${window.location.protocol === 'file:' ? '(⚠️ Use http:// instead!)' : '(✓ Good)'}
+                    </span>
+                </div>
+            `;
+        }
+
+        // Display auth info
+        function displayAuthInfo() {
+            const info = document.getElementById('authInfo');
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+
+            let tokenInfo = '';
+            if (token) {
+                try {
+                    // Decode JWT token (basic decode, not verification)
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    const expDate = new Date(payload.exp * 1000);
+                    const isExpired = Date.now() >= payload.exp * 1000;
+                    
+                    tokenInfo = `
+                        <div class="info-row">
+                            <span class="label">Token Present:</span>
+                            <span class="value success">✓ Yes</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Token Expires:</span>
+                            <span class="value ${isExpired ? 'error' : 'success'}">
+                                ${expDate.toLocaleString()} ${isExpired ? '(⚠️ EXPIRED!)' : '(✓ Valid)'}
+                            </span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">User ID:</span>
+                            <span class="value">${payload.id}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">User Email:</span>
+                            <span class="value">${payload.email}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">User Role:</span>
+                            <span class="value">${payload.role}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Token (truncated):</span>
+                            <span class="value">${token.substring(0, 50)}...</span>
+                        </div>
+                    `;
+                } catch (e) {
+                    tokenInfo = `
+                        <div class="info-row">
+                            <span class="label">Token Present:</span>
+                            <span class="value error">✗ Invalid format</span>
+                        </div>
+                    `;
+                }
+            } else {
+                tokenInfo = `
+                    <div class="info-row">
+                        <span class="label">Token Present:</span>
+                        <span class="value error">✗ No (Not logged in)</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Action:</span>
+                        <span class="value warning">→ Go to <a href="index.html" style="color: #3b82f6;">Login Page</a></span>
+                    </div>
+                `;
+            }
+
+            info.innerHTML = tokenInfo;
+        }
+
+        // Display API info
+        function displayApiInfo() {
+            const info = document.getElementById('apiInfo');
+            info.innerHTML = `
+                <div class="info-row">
+                    <span class="label">API Base URL:</span>
+                    <span class="value">${API_BASE_URL}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Expected Backend:</span>
+                    <span class="value">http://localhost:3000</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Health Endpoint:</span>
+                    <span class="value">${API_BASE_URL}/health</span>
+                </div>
+            `;
+        }
+
+        // Display storage info
+        function displayStorageInfo() {
+            const info = document.getElementById('storageInfo');
+            let html = '';
+            
+            if (localStorage.length === 0) {
+                html = '<div class="info-row"><span class="label">LocalStorage:</span><span class="value warning">Empty</span></div>';
+            } else {
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    const value = localStorage.getItem(key);
+                    const displayValue = value.length > 100 ? value.substring(0, 100) + '...' : value;
+                    html += `
+                        <div class="info-row">
+                            <span class="label">${key}:</span>
+                            <span class="value">${displayValue}</span>
+                        </div>
+                    `;
+                }
+            }
+            
+            info.innerHTML = html;
+        }
+
+        // Clear storage
+        function clearStorage() {
+            if (confirm('Clear all LocalStorage data? You will need to login again.')) {
+                localStorage.clear();
+                alert('LocalStorage cleared!');
+                displayStorageInfo();
+                displayAuthInfo();
+            }
+        }
+
+        // Test functions
+        async function testHealth() {
+            const results = document.getElementById('testResults');
+            results.innerHTML = '<pre>Testing health endpoint...</pre>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`);
+                const data = await response.json();
+                results.innerHTML = `<pre class="success">✓ Health Check Success:\n${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                results.innerHTML = `<pre class="error">✗ Health Check Failed:\n${error.message}\n\n⚠️ Make sure backend is running: node server.js</pre>`;
+            }
+        }
+
+        async function testTeams() {
+            await testEndpoint('/teams', 'Teams');
+        }
+
+        async function testCoaches() {
+            await testEndpoint('/coaches', 'Coaches');
+        }
+
+        async function testMatches() {
+            await testEndpoint('/matches', 'Matches');
+        }
+
+        async function testEndpoint(endpoint, name) {
+            const results = document.getElementById('testResults');
+            results.innerHTML = `<pre>Testing ${name} endpoint...</pre>`;
+            
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                results.innerHTML = `<pre class="error">✗ No auth token found\n\n→ Please login first at <a href="index.html" style="color: #3b82f6;">index.html</a></pre>`;
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${error}`);
+                }
+                
+                const data = await response.json();
+                results.innerHTML = `<pre class="success">✓ ${name} API Success:\nFound ${data.length} records\n\n${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                results.innerHTML = `<pre class="error">✗ ${name} API Failed:\n${error.message}</pre>`;
+            }
+        }
+
+        async function testLogin() {
+            const results = document.getElementById('testResults');
+            results.innerHTML = '<pre>Testing login endpoint...</pre>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@example.com',
+                        password: 'admin123'
+                    })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Login failed');
+                }
+                
+                const data = await response.json();
+                results.innerHTML = `<pre class="success">✓ Login Test Success:\n${JSON.stringify(data, null, 2)}\n\n⚠️ This was a test. Your actual token was not changed.</pre>`;
+            } catch (error) {
+                results.innerHTML = `<pre class="error">✗ Login Test Failed:\n${error.message}\n\nPossible causes:\n1. Backend not running\n2. Database not set up\n3. User doesn't exist in database</pre>`;
+            }
+        }
+
+        // Initialize
+        displaySystemInfo();
+        displayAuthInfo();
+        displayApiInfo();
+        displayStorageInfo();
+
+        // Auto-refresh every 5 seconds
+        setInterval(() => {
+            displayAuthInfo();
+        }, 5000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connection Test - Football Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0A774A 0%, #1A1A1A 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #0A774A;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .test-item {
+            background: #f9f9f9;
+            border-left: 4px solid #e0e0e0;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .test-item.loading {
+            border-color: #3b82f6;
+        }
+
+        .test-item.success {
+            border-color: #0A774A;
+            background: #f0fdf4;
+        }
+
+        .test-item.error {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .test-item h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .test-item p {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+        }
+
+        .status-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .loading .status-icon {
+            background: #3b82f6;
+            animation: pulse 1.5s infinite;
+        }
+
+        .success .status-icon {
+            background: #0A774A;
+        }
+
+        .error .status-icon {
+            background: #dc2626;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .button {
+            background: #0A774A;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+
+        .button:hover {
+            background: #086339;
+        }
+
+        .button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .info-box {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .info-box strong {
+            color: #92400e;
+        }
+
+        .code {
+            background: #1A1A1A;
+            color: #10b981;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .details {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #888;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .details pre {
+            margin: 5px 0 0 0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔌 Connection Test</h1>
+        <p class="subtitle">Testing Football Management System backend connection</p>
+
+        <div id="testResults">
+            <!-- Test items will be added here -->
+        </div>
+
+        <button class="button" id="retryBtn" onclick="runTests()" style="display: none;">
+            🔄 Retry Tests
+        </button>
+
+        <div class="info-box">
+            <strong>⚠️ Important:</strong> Make sure the backend server is running before testing.<br>
+            Run: <span class="code">cd html-version/backend && node server.js</span>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3000/api';
+        const tests = [
+            {
+                name: 'Backend Server',
+                test: async () => {
+                    const response = await fetch(`${API_BASE_URL}/health`);
+                    if (!response.ok) throw new Error('Server not responding');
+                    const data = await response.json();
+                    return `✅ Server is running (${data.status})`;
+                }
+            },
+            {
+                name: 'CORS Configuration',
+                test: async () => {
+                    const response = await fetch(`${API_BASE_URL}/health`);
+                    if (!response.ok) throw new Error('CORS check failed');
+                    return '✅ CORS is properly configured';
+                }
+            },
+            {
+                name: 'Authentication Token',
+                test: async () => {
+                    const token = localStorage.getItem('token');
+                    if (!token) {
+                        return '⚠️ No auth token found. Please login first.';
+                    }
+                    return `✅ Auth token present`;
+                }
+            },
+            {
+                name: 'Teams API Endpoint',
+                test: async () => {
+                    const token = localStorage.getItem('token');
+                    if (!token) {
+                        throw new Error('Login required to test this endpoint');
+                    }
+                    const response = await fetch(`${API_BASE_URL}/teams`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (response.status === 401) throw new Error('Unauthorized - please login');
+                    if (!response.ok) throw new Error('Teams endpoint failed');
+                    const data = await response.json();
+                    return `✅ Teams endpoint working (${data.length} teams)`;
+                }
+            },
+            {
+                name: 'Coaches API Endpoint',
+                test: async () => {
+                    const token = localStorage.getItem('token');
+                    if (!token) {
+                        throw new Error('Login required to test this endpoint');
+                    }
+                    const response = await fetch(`${API_BASE_URL}/coaches`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (response.status === 401) throw new Error('Unauthorized - please login');
+                    if (!response.ok) throw new Error('Coaches endpoint failed');
+                    const data = await response.json();
+                    return `✅ Coaches endpoint working (${data.length} coaches)`;
+                }
+            },
+            {
+                name: 'Matches API Endpoint',
+                test: async () => {
+                    const token = localStorage.getItem('token');
+                    if (!token) {
+                        throw new Error('Login required to test this endpoint');
+                    }
+                    const response = await fetch(`${API_BASE_URL}/matches`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (response.status === 401) throw new Error('Unauthorized - please login');
+                    if (!response.ok) throw new Error('Matches endpoint failed');
+                    const data = await response.json();
+                    return `✅ Matches endpoint working (${data.length} matches)`;
+                }
+            }
+        ];
+
+        async function runTests() {
+            const resultsContainer = document.getElementById('testResults');
+            const retryBtn = document.getElementById('retryBtn');
+            resultsContainer.innerHTML = '';
+            retryBtn.style.display = 'none';
+
+            let allPassed = true;
+
+            for (const testItem of tests) {
+                const div = document.createElement('div');
+                div.className = 'test-item loading';
+                div.innerHTML = `
+                    <h3>
+                        <span class="status-icon">⏳</span>
+                        ${testItem.name}
+                    </h3>
+                    <p>Testing...</p>
+                `;
+                resultsContainer.appendChild(div);
+
+                try {
+                    const result = await testItem.test();
+                    div.className = 'test-item success';
+                    div.innerHTML = `
+                        <h3>
+                            <span class="status-icon">✓</span>
+                            ${testItem.name}
+                        </h3>
+                        <p>${result}</p>
+                    `;
+                } catch (error) {
+                    allPassed = false;
+                    div.className = 'test-item error';
+                    div.innerHTML = `
+                        <h3>
+                            <span class="status-icon">✗</span>
+                            ${testItem.name}
+                        </h3>
+                        <p>❌ ${error.message}</p>
+                        <div class="details">
+                            <strong>Error details:</strong>
+                            <pre>${error.stack || error.toString()}</pre>
+                        </div>
+                    `;
+                }
+
+                // Small delay between tests
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+
+            retryBtn.style.display = 'block';
+
+            // Add summary
+            const summary = document.createElement('div');
+            summary.className = `test-item ${allPassed ? 'success' : 'error'}`;
+            summary.innerHTML = `
+                <h3>
+                    <span class="status-icon">${allPassed ? '✓' : '✗'}</span>
+                    Summary
+                </h3>
+                <p>${allPassed 
+                    ? '🎉 All tests passed! Your system is ready to use.' 
+                    : '⚠️ Some tests failed. Please check the errors above and follow the troubleshooting guide.'
+                }</p>
+            `;
+            resultsContainer.appendChild(summary);
+
+            if (allPassed) {
+                setTimeout(() => {
+                    if (confirm('All tests passed! Would you like to go to the login page?')) {
+                        window.location.href = 'index.html';
+                    }
+                }, 1000);
+            }
+        }
+
+        // Auto-run tests on page load
+        window.addEventListener('DOMContentLoaded', runTests);
+    </script>
+</body>
+</html>
